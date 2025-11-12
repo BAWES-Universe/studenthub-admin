@@ -123,6 +123,23 @@
               "sourceMap": true,
               "namedChunks": true
             },
+            "local": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.local.ts"
+                }
+              ],
+              "buildOptimizer": false,
+              "optimization": false,
+              "vendorChunk": true,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "namedChunks": true,
+              "aot": true,
+              "serviceWorker": false,
+              "ngswConfigPath": "ngsw-config.json"
+            },
             "krushn": {
               "fileReplacements": [
                 {
@@ -163,6 +180,9 @@
             },
             "khalid": {
               "browserTarget": "app:build:khalid"
+            },
+            "local": {
+              "browserTarget": "app:build:local"
             },
             "ci": {
               "progress": false
