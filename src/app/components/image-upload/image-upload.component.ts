@@ -4,6 +4,7 @@ import {ActionSheetController, AlertController, Platform} from '@ionic/angular';
 
 import {AwsService} from '../../providers/aws.service';
 import {CameraService} from '../../providers/camera.service';
+import { BACKEND_IMAGE_EXTENSIONS, acceptAttribute, uploadAlertMessage } from '../../providers/upload-formats';
 
 @Component({
   selector: 'app-image-upload',
@@ -31,6 +32,7 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
   @Input() icon = 'image-outline';
   // File prefix when uploading to S3
   @Input() prefix = 'image';
+  public acceptedFormats = acceptAttribute(BACKEND_IMAGE_EXTENSIONS);
 
   // Used for link generation after upload
   public bucketUrl: string;
@@ -141,7 +143,7 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
       const file = fileList.item(0);
 
       // Upload The File
-      const uploadObservable = this.awsService.uploadFile(file);
+      const uploadObservable = this.awsService.uploadFile(file, BACKEND_IMAGE_EXTENSIONS);
       this.processFileUpload(uploadObservable);
     }
   }
@@ -153,7 +155,7 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
    */
   uploadFileViaNativeFilePath(path) {
     // Upload and process for progress
-    this.awsService.uploadNativePath(path)
+    this.awsService.uploadNativePath(path, BACKEND_IMAGE_EXTENSIONS)
       .then((uploadObservable) => {
         this.processFileUpload(uploadObservable);
       })
@@ -193,9 +195,15 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
         newUpload.name = progress.key ? progress.key : progress.Key;
         newUpload.link = this.bucketUrlTemporary + newUpload.name;
       }
-    }, (err) => {
+    }, async (err) => {
 
       newUpload.status = 'error';
+      const alert = await this.alertCtrl.create({
+        header: 'Error',
+        message: uploadAlertMessage(err, 'Error while uploading file!'),
+        buttons: ['Okay']
+      });
+      await alert.present();
       // Hide File Upload Indicator based on which file is being uploaded
       this.isUploading = false;
     }, () => {

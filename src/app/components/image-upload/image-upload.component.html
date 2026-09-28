@@ -1,4 +1,4 @@
-<input style='display:none;' type='file' #fileInput (change)="uploadFileViaHtmlFileInput($event)" accept="image/*"/>
+<input style='display:none;' type='file' #fileInput (change)="uploadFileViaHtmlFileInput($event)" [accept]="acceptedFormats"/>
 <ion-card (click)="uploadBtnClicked($event)" tappable>
   <ion-spinner *ngIf="isUploading"></ion-spinner>
   <ion-icon [name]="icon" *ngIf="!isUploading && !value"></ion-icon>

@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 //services
 import { AwsService } from 'src/app/providers/aws.service';
 import { SentryErrorhandlerService } from 'src/app/providers/sentry.errorhandler.service';
+import { EXCEL_EXTENSIONS, uploadAlertMessage } from 'src/app/providers/upload-formats';
 import { EventService as SegmentService } from 'src/app/providers/logged-in/event.service';
 import { EventService } from "../../../../providers/event.service";
 import { AuthService } from 'src/app/providers/auth.service';
@@ -84,7 +85,7 @@ export class ImportPage implements OnInit {
 
     this.uploading = true;
 
-    this.browserUploadSubscription = this.awsService.uploadFile(fileList[0]).subscribe(event => {
+    this.browserUploadSubscription = this.awsService.uploadFile(fileList[0], EXCEL_EXTENSIONS).subscribe(event => {
 
       this._handleUpload(event);
 
@@ -99,7 +100,7 @@ export class ImportPage implements OnInit {
 
       const alert = await this._alertCtrl.create({
         header: 'Error',
-        message: 'Error while uploading file!',
+        message: uploadAlertMessage(err, 'Error while uploading file!'),
         buttons: ['Okay']
       });
 
