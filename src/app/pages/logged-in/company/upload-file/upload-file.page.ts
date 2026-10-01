@@ -4,6 +4,7 @@ import {AlertController, ModalController, Platform, ToastController} from '@ioni
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 // Services
 import { SentryErrorhandlerService } from 'src/app/providers/sentry.errorhandler.service';
+import { BACKEND_UPLOAD_EXTENSIONS, acceptAttribute, uploadAlertMessage } from 'src/app/providers/upload-formats';
 import { AwsService } from 'src/app/providers/aws.service';
 import {CompanyService} from '../../../../providers/logged-in/company.service';
 //models
@@ -31,6 +32,7 @@ export class UploadFilePage implements OnInit, OnDestroy {
 
   public currentTarget;
   public tempLocation;
+  public acceptedFormats = acceptAttribute(BACKEND_UPLOAD_EXTENSIONS);
 
   public filePickSubscription: Subscription;
   public browserUploadSubscription: Subscription;
@@ -105,7 +107,7 @@ export class UploadFilePage implements OnInit, OnDestroy {
 
     this.progress = 1; // show loader
 
-    this.browserUploadSubscription = this.awsService.uploadFile(fileList[0]).subscribe(event => {
+    this.browserUploadSubscription = this.awsService.uploadFile(fileList[0], BACKEND_UPLOAD_EXTENSIONS).subscribe(event => {
       this._handleFileSuccess(event);
     },
       async err => {
@@ -119,7 +121,7 @@ export class UploadFilePage implements OnInit, OnDestroy {
 
         const alert = await this.alertCtrl.create({
           header: 'Error',
-          message: 'Error while uploading file!',
+          message: uploadAlertMessage(err, 'Error while uploading file!'),
           buttons: ['Okay']
         });
 

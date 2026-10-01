@@ -19,6 +19,7 @@ import {Subscription} from "rxjs";
 import {AwsService} from "src/app/providers/aws.service";
 import {CameraService} from "src/app/providers/logged-in/camera.service";
 import {SentryErrorhandlerService} from "src/app/providers/sentry.errorhandler.service";
+import {JPEG_PNG_EXTENSIONS, isUnsupportedUploadError, uploadAlertMessage} from "src/app/providers/upload-formats";
 
 
 @Component({
@@ -317,7 +318,7 @@ export class StaffFormPage implements OnInit {
   async uploadFileViaNativeFilePath(uri) {
     this.progress = 1;//show loader
 
-    this.awsService.uploadNativePath(uri).then(o => {
+    this.awsService.uploadNativePath(uri, JPEG_PNG_EXTENSIONS).then(o => {
       o.subscribe(event => {
         this._handleFileSuccess(event);
       }, async err => {
@@ -349,6 +350,8 @@ export class StaffFormPage implements OnInit {
         // networking errors
         if (err && networkErrors.indexOf(err.message) > -1) {
           message = 'Error uploading file';
+        } else if (isUnsupportedUploadError(err)) {
+          message = err.message;
           // system errors
         } else if (err.message && err.message.indexOf(':') > -1) {
           message = 'Error getting file from Library';
@@ -397,7 +400,7 @@ export class StaffFormPage implements OnInit {
     {
       this.progress = 1;
 
-      this.uploadFileSubscription = this.awsService.uploadFile(fileList[0]).subscribe(event => {
+      this.uploadFileSubscription = this.awsService.uploadFile(fileList[0], JPEG_PNG_EXTENSIONS).subscribe(event => {
         this._handleFileSuccess(event);
       }, async err => {
 
@@ -411,7 +414,7 @@ export class StaffFormPage implements OnInit {
 
         const alert = await this.alertCtrl.create({
           header: 'Error',
-          message: 'Error while uploading file!',
+          message: uploadAlertMessage(err, 'Error while uploading file!'),
           buttons: ['Okay']
         });
 

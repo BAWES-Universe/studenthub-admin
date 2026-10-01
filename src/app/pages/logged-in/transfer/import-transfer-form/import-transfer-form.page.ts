@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { AwsService } from 'src/app/providers/aws.service';
 import { TransferService } from 'src/app/providers/logged-in/transfer.service';
 import { SentryErrorhandlerService } from 'src/app/providers/sentry.errorhandler.service';
+import { EXCEL_EXTENSIONS, uploadAlertMessage } from 'src/app/providers/upload-formats';
 
 
 @Component({
@@ -65,10 +66,8 @@ export class ImportTransferFormPage implements OnInit {
 
     this.uploading = true;
 
-    this.browserUploadSubscription = this.awsService.uploadFile(fileList[0]).subscribe(event => {
+    this.browserUploadSubscription = this.awsService.uploadFile(fileList[0], EXCEL_EXTENSIONS).subscribe(event => {
 
-      this.uploading = false;
-      
       this._handleUpload(event);
 
     }, async err => {
@@ -82,7 +81,7 @@ export class ImportTransferFormPage implements OnInit {
 
       const alert = await this._alertCtrl.create({
         header: 'Error',
-        message: 'Error while uploading file!',
+        message: uploadAlertMessage(err, 'Error while uploading file!'),
         buttons: ['Okay']
       });
 
@@ -107,6 +106,8 @@ export class ImportTransferFormPage implements OnInit {
 
       if (this.fileInput && this.fileInput.nativeElement)
         this.fileInput.nativeElement.value = null;
+
+        this.uploading = false;
 
         this.navCtrl.navigateForward(['transfer-paid', event.Key, this.bank], {
           state: {

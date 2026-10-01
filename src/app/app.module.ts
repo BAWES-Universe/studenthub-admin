@@ -57,12 +57,6 @@ import localeAr from '@angular/common/locales/ar-KW';
 import { MajorFormPageModule } from './pages/logged-in/major/major-form/major-form.module';
 import { DegreeGroupFormPageModule } from './pages/logged-in/degree-group/degree-group-form/degree-group-form.module';
 import { DegreeFormPageModule } from './pages/logged-in/degree/degree-form/degree-form.module';
-import { AwsService } from './providers/aws.service';
-
-export function awsStartupServiceFactory(awsService) {
-  return () => awsService.setConfig();
-}
-
 export function startupServiceFactory(authService: AuthService) {
   return () => authService.load();
 }
@@ -144,13 +138,6 @@ declare global {
     EditorModule
   ],
   providers: [
-    {
-      // Provider for APP_INITIALIZER
-      provide: APP_INITIALIZER,
-      useFactory: awsStartupServiceFactory,
-      deps: [AwsService],
-      multi: true
-    },
     {
       // Provider for APP_INITIALIZER
       provide: APP_INITIALIZER,

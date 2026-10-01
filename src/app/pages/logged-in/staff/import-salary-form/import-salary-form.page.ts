@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { AwsService } from 'src/app/providers/aws.service';
 import { StaffService } from 'src/app/providers/logged-in/staff.service';
 import { SentryErrorhandlerService } from 'src/app/providers/sentry.errorhandler.service';
+import { EXCEL_EXTENSIONS, uploadAlertMessage } from 'src/app/providers/upload-formats';
 
 
 @Component({
@@ -62,7 +63,7 @@ export class ImportSalaryFormPage implements OnInit {
 
     this.uploading = true;
 
-    this.browserUploadSubscription = this.awsService.uploadFile(fileList[0]).subscribe(event => {
+    this.browserUploadSubscription = this.awsService.uploadFile(fileList[0], EXCEL_EXTENSIONS).subscribe(event => {
 
       //this.uploading = false;
       
@@ -79,7 +80,7 @@ export class ImportSalaryFormPage implements OnInit {
 
       const alert = await this._alertCtrl.create({
         header: 'Error',
-        message: 'Error while uploading file!',
+        message: uploadAlertMessage(err, 'Error while uploading file!'),
         buttons: ['Okay']
       });
 

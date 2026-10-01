@@ -39,7 +39,7 @@
                         <ion-icon name="cloud-upload-outline"></ion-icon>&nbsp;&nbsp;
                         <span *ngIf="this.fileModel.file_s3_path">Replace File</span>
                         <span *ngIf="!this.fileModel.file_s3_path">Select file</span>
-                        <input class="upload" type='file' #fileInput (change)="browserUpload($event)">
+                        <input class="upload" type='file' #fileInput (change)="browserUpload($event)" [accept]="acceptedFormats">
                         <!-- .png,.jpg,.jpeg,.pdf,.doc,.docx -->
                     </ion-button>
 
