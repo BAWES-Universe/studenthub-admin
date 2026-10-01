@@ -113,7 +113,7 @@ export class AuthService {
         this.currency_pref = ret.value;
     });
     
-    this.storageService.get('loggedInAdmin').then(ret => {
+    await this.storageService.get('loggedInAdmin').then(ret => {
 
       const admin = JSON.parse(ret.value);//ret;// 
 
