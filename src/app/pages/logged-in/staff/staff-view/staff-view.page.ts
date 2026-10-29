@@ -739,6 +739,10 @@ export class StaffViewPage implements OnInit {
     candidate.candidate_personal_photo = null;
   }
 
+  markLogoUnavailable(company) {
+    company.logo_unavailable = true;
+  }
+
 
   /**
    *

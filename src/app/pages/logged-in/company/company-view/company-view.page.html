@@ -108,9 +108,9 @@
 
     <section *ngIf="segment == 'info'">
       <div class="ion-text-center">
-        <img *ngIf="company.company_logo" [src]="company.company_logo_url !== undefined ? company.company_logo_url : (aws.cloudinaryUrl + company.company_logo)"
-          (error)="loadLogo($event,company)" width="80">
-        <img *ngIf="!company.company_logo" src="/assets/icon.png" width="80">
+        <img *ngIf="company.company_logo && !company.logo_unavailable" [src]="company.company_logo_url !== undefined ? company.company_logo_url : (aws.cloudinaryUrl + company.company_logo)"
+          (error)="markLogoUnavailable(company)" width="80">
+        <img *ngIf="!company.company_logo || company.logo_unavailable" src="/assets/icon.png" width="80">
       </div>
 
       <!-- If Main Company -->

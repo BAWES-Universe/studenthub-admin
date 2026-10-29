@@ -3,6 +3,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ActionSheetController, AlertController, Platform} from '@ionic/angular';
 
 import {AwsService} from '../../providers/aws.service';
+import { resolvedStoredImageUrl } from '../../providers/stored-image-url';
 import {CameraService} from '../../providers/camera.service';
 import { BACKEND_IMAGE_EXTENSIONS, acceptAttribute, uploadAlertMessage } from '../../providers/upload-formats';
 
@@ -62,8 +63,8 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
     this.bucketUrl = this.bucketUrlPermanent + 'photos/';
   }
 
-  /** Resolved URL for a company logo already stored by the API. */
-  @Input() previewUrl: string;
+  /** Resolved URL for a company logo already stored by the API. Null means unavailable. */
+  @Input() previewUrl?: string | null;
 
   ngOnInit() {
     if (this.prefix == 'photo') {
@@ -86,7 +87,7 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
       return this.bucketUrlTemporary + this.value;
     }
     if (this.prefix === 'logo') {
-      return this.previewUrl || '';
+      return resolvedStoredImageUrl(this.previewUrl, this.value, this.awsService.cloudinaryUrl) || '';
     }
     return this.value ? this.bucketUrl + this.value : '';
   }

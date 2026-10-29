@@ -109,8 +109,8 @@ export class CompanyPage implements OnInit {
     });
   }
 
-  loadLogo($event, company) {
-    company.company_logo = null;
+  markLogoUnavailable(company) {
+    company.logo_unavailable = true;
   }
 
   resetStatus() {
