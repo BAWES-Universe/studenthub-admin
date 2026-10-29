@@ -19,6 +19,7 @@ import { StaffSalaryFormPage } from '../staff-salary-form/staff-salary-form.page
 import { StaffSalary } from 'src/app/models/staff_salary';
 import {StoryService} from "../../../../providers/logged-in/story.service";
 import {AwsService} from "../../../../providers/aws.service";
+import { resolvedStoredImageUrl } from '../../../../providers/stored-image-url';
 import {InvitationService} from "../../../../providers/logged-in/invitation.service";
 import {PermissionService} from "../../../../providers/logged-in/permission.service";
 import { DailyStandupQuestionService } from 'src/app/providers/logged-in/daily-standup-question.service';
@@ -739,8 +740,17 @@ export class StaffViewPage implements OnInit {
     candidate.candidate_personal_photo = null;
   }
 
+  logoSrc(company): string | null {
+    return resolvedStoredImageUrl(company?.company_logo_url, company?.company_logo, this.aws.cloudinaryUrl);
+  }
+
+  showLogo(company): boolean {
+    const src = this.logoSrc(company);
+    return !!src && company?.logo_failed_src !== src;
+  }
+
   markLogoUnavailable(company) {
-    company.logo_unavailable = true;
+    company.logo_failed_src = this.logoSrc(company);
   }
 
 

@@ -481,8 +481,8 @@
           </ion-badge>
         </ion-label>
         <ion-avatar slot="start">
-          <img *ngIf="company.company_logo && !company.logo_unavailable" [src]="company.company_logo_url !== undefined ? company.company_logo_url : (aws.cloudinaryUrl + company.company_logo)" (error)="markLogoUnavailable(company)">
-          <img *ngIf="!company.company_logo || company.logo_unavailable" src="/assets/icon.png">
+          <img *ngIf="showLogo(company)" [src]="logoSrc(company)" (error)="markLogoUnavailable(company)">
+          <img *ngIf="!showLogo(company)" src="/assets/icon.png">
         </ion-avatar>
 
       </ion-item>

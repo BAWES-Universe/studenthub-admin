@@ -1,7 +1,7 @@
 <input style='display:none;' type='file' #fileInput (change)="uploadFileViaHtmlFileInput($event)" [accept]="acceptedFormats"/>
 <ion-card (click)="uploadBtnClicked($event)" tappable>
   <ion-spinner *ngIf="isUploading"></ion-spinner>
-  <ion-icon [name]="icon" *ngIf="!isUploading && !value"></ion-icon>
-  <img [src]="displaySrc()" *ngIf="!isUploading && displaySrc()"/><br/>
+  <ion-icon [name]="icon" *ngIf="!isUploading && (!displaySrc() || previewBroken())"></ion-icon>
+  <img [src]="displaySrc()" *ngIf="!isUploading && displaySrc() && !previewBroken()" (error)="onPreviewError()"/><br/>
   <ion-label>{{ label }}</ion-label>
 </ion-card>

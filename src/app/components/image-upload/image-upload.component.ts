@@ -63,8 +63,11 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
     this.bucketUrl = this.bucketUrlPermanent + 'photos/';
   }
 
-  /** Resolved URL for a company logo already stored by the API. Null means unavailable. */
+  /** Resolved URL for a company logo already stored by the API. Null or empty means unavailable. */
   @Input() previewUrl?: string | null;
+  /** Filename uploaded in this control session. Existing saved values do not match it. */
+  private uploadedTempName: string | null = null;
+  private previewFailedSrc = '';
 
   ngOnInit() {
     if (this.prefix == 'photo') {
@@ -79,17 +82,22 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
   }
 
   displaySrc(): string {
-    if (this.prefix === 'logo' && this.value && this.value.indexOf('/') === -1) {
-      return this.bucketUrlTemporary + this.value;
-    }
-
-    if (this.bucketUrl === this.bucketUrlTemporary && this.value) {
+    if (this.uploadedTempName && this.value === this.uploadedTempName) {
       return this.bucketUrlTemporary + this.value;
     }
     if (this.prefix === 'logo') {
       return resolvedStoredImageUrl(this.previewUrl, this.value, this.awsService.cloudinaryUrl) || '';
     }
     return this.value ? this.bucketUrl + this.value : '';
+  }
+
+  previewBroken(): boolean {
+    const src = this.displaySrc();
+    return !!src && this.previewFailedSrc === src;
+  }
+
+  onPreviewError() {
+    this.previewFailedSrc = this.displaySrc();
   }
 
   /**
@@ -230,6 +238,8 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
       this.isUploading = false;
       // Switch to temporary bucket url
       this.bucketUrl = this.bucketUrlTemporary;
+      this.uploadedTempName = newUpload.name;
+      this.previewFailedSrc = '';
       // Set the new value of this file upload
       this.value = newUpload.name;
     });

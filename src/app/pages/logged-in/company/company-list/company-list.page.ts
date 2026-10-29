@@ -7,6 +7,7 @@ import { Company } from 'src/app/models/company';
 import { CompanyService } from 'src/app/providers/logged-in/company.service';
 import { AuthService } from 'src/app/providers/auth.service';
 import { AwsService } from '../../../../providers/aws.service';
+import { resolvedStoredImageUrl } from '../../../../providers/stored-image-url';
 import { EventService } from '../../../../providers/event.service';
 // pages
 import { CompanyFormPage } from '../company-form/company-form.page';
@@ -218,8 +219,17 @@ export class CompanyListPage implements OnInit {
     confirm.present();
   }
 
-  markLogoUnavailable(company) {
-    company.logo_unavailable = true;
+  logoSrc(company: Company): string | null {
+    return resolvedStoredImageUrl(company?.company_logo_url, company?.company_logo, this.awsService.cloudinaryUrl);
+  }
+
+  showLogo(company: Company): boolean {
+    const src = this.logoSrc(company);
+    return !!src && company?.logo_failed_src !== src;
+  }
+
+  markLogoUnavailable(company: Company) {
+    company.logo_failed_src = this.logoSrc(company);
   }
 
   resetStatus() {

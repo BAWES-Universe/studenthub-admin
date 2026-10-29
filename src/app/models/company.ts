@@ -22,6 +22,7 @@ export class Company {
     company_logo: string;
     company_logo_url?: string | null;
     logo_unavailable?: boolean;
+    logo_failed_src?: string | null;
     company_status: number;
     total_candidates: number;
     total_suggestions: number;
