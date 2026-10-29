@@ -111,7 +111,6 @@ export class CompanyFormPage implements OnInit {
           name: ['', Validators.required],
           bonus_commission: ['', Validators.required],
           hourly_rate: ['', Validators.required],
-          logo: [''],
           common_name_en: [''],
           common_name_ar: [''],
           description_en: [''],
@@ -130,7 +129,6 @@ export class CompanyFormPage implements OnInit {
           email: ['', [Validators.required, CustomValidator.emailValidator]],
           bonus_commission: ['', Validators.required],
           hourly_rate: ['', Validators.required],
-          logo: [''],
         });
       }
     } else { // Show Update Form
@@ -145,7 +143,6 @@ export class CompanyFormPage implements OnInit {
             description_en: [this.model.company_description_en],
             description_ar: [this.model.company_description_ar],
             website: [this.model.company_website],
-            logo: [this.model.company_logo],
             approved_to_hire: [this.model.company_approved_to_hire]
         });
       } else {
@@ -160,7 +157,6 @@ export class CompanyFormPage implements OnInit {
             description_en: [this.model.company_description_en],
             description_ar: [this.model.company_description_ar],
             website: [this.model.company_website],
-            logo: [this.model.company_logo],
             approved_to_hire: [this.model.company_approved_to_hire]
         });
       }
@@ -180,7 +176,6 @@ export class CompanyFormPage implements OnInit {
     this.model.company_description_en = this.form.value.description_en;
     this.model.company_description_ar = this.form.value.description_ar;
     this.model.company_website = this.form.value.website;
-    this.model.company_logo = this.form.value.logo;
     this.model.company_approved_to_hire = this.form.value.approved_to_hire;
     if (!this.isSubCompany) {
       this.model.password = this.form.value.password;

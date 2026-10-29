@@ -24,6 +24,17 @@ export class AuthHttpService {
     public eventService: EventService
   ) { }
 
+  getPrivateBlob(endpointUrl: string): Observable<Blob> {
+    const url = environment.apiEndpoint + endpointUrl;
+    const headers = new HttpHeaders({
+      Authorization: 'Bearer ' + this._auth.getAccessToken(),
+      'Cache-Control': 'no-store',
+      Pragma: 'no-cache'
+    });
+
+    return this._http.get(url, { headers, responseType: 'blob' });
+  }
+
   /**
    * Requests via GET verb
    * @param {string} endpointUrl

@@ -48,6 +48,8 @@ export class CompanyViewPage implements OnInit {
   public loadingStats = false;
 
   public company: Company;
+  public licenceStatus = '';
+  public licencePreviewUrl = '';
   public subCompanies: Company[] = [];
   public stores: Store[] = [];
 
@@ -136,6 +138,7 @@ export class CompanyViewPage implements OnInit {
       this.deleting = false;
 
       this.company = response;
+      this.loadLicence();
 
       // if load
       this.companyStatus = !!(this.company.company_status);
@@ -1142,6 +1145,31 @@ export class CompanyViewPage implements OnInit {
 
   markLogoUnavailable(company: Company) {
     company.logo_failed_src = this.logoSrc(company);
+  }
+
+  loadLicence() {
+    if (this.licencePreviewUrl) {
+      URL.revokeObjectURL(this.licencePreviewUrl);
+      this.licencePreviewUrl = '';
+    }
+    if (!this.company || !this.company.commercial_licence) {
+      this.licenceStatus = 'none';
+      return;
+    }
+    this.licenceStatus = 'loading';
+    this.companyService.openLicence(this.company.company_id).subscribe((blob) => {
+      this.licencePreviewUrl = URL.createObjectURL(blob);
+      this.licenceStatus = 'ready';
+    }, (error) => {
+      this.licenceStatus = error && error.status === 401 ? 'auth' : 'unavailable';
+    });
+  }
+
+  openLicence(event: Event) {
+    event.preventDefault();
+    if (this.licencePreviewUrl) {
+      window.open(this.licencePreviewUrl, '_blank', 'noopener');
+    }
   }
 
   /**

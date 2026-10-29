@@ -17,6 +17,10 @@ export class CompanyService {
 
   private _companyEndpoint = '/companies';
 
+  openLicence(companyId: number): Observable<Blob> {
+    return this._authhttp.getPrivateBlob(this._companyEndpoint + '/commercial-licence/' + companyId);
+  }
+
   constructor(private _authhttp: AuthHttpService) { }
 
   /**
@@ -62,7 +66,6 @@ export class CompanyService {
       description_en: model.company_description_en,
       description_ar: model.company_description_ar,
       website: model.company_website,
-      logo: model.company_logo,
       approved_to_hire: model.company_approved_to_hire,
       password: model.password
     };
@@ -87,7 +90,6 @@ export class CompanyService {
       description_en: model.company_description_en,
       description_ar: model.company_description_ar,
       website: model.company_website,
-      logo: model.company_logo,
       approved_to_hire: model.company_approved_to_hire
     };
 
