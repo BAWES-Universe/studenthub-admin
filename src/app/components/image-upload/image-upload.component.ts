@@ -62,8 +62,11 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
     this.bucketUrl = this.bucketUrlPermanent + 'photos/';
   }
 
+  /** Resolved URL for a company logo already stored by the API. */
+  @Input() previewUrl: string;
+
   ngOnInit() {
-    if (this.prefix == 'photo' || this.prefix == 'logo') {
+    if (this.prefix == 'photo') {
       this.bucketUrl = this.awsService.cloudinaryUrl;
     } else if(this.prefix == "discount-category") {
       this.bucketUrlPermanent = this.awsService.permanentBucketUrl + 'discount-category/';
@@ -72,6 +75,20 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
       this.bucketUrlPermanent = this.awsService.permanentBucketUrl + 'discount/';
       this.bucketUrl = this.bucketUrlPermanent;
     }
+  }
+
+  displaySrc(): string {
+    if (this.prefix === 'logo' && this.value && this.value.indexOf('/') === -1) {
+      return this.bucketUrlTemporary + this.value;
+    }
+
+    if (this.bucketUrl === this.bucketUrlTemporary && this.value) {
+      return this.bucketUrlTemporary + this.value;
+    }
+    if (this.prefix === 'logo') {
+      return this.previewUrl || '';
+    }
+    return this.value ? this.bucketUrl + this.value : '';
   }
 
   /**

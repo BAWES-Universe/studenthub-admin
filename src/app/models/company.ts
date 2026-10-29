@@ -20,6 +20,7 @@ export class Company {
     company_website: string;
     company_email: string;
     company_logo: string;
+    company_logo_url?: string;
     company_status: number;
     total_candidates: number;
     total_suggestions: number;
