@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import {ToastController, AlertController, ModalController, Platform, NavController} from '@ionic/angular';
 import { Router, ActivatedRoute } from '@angular/router';
 // services
@@ -37,7 +38,7 @@ import { DiscountViewPage } from '../discount/discount-view/discount-view.page';
   templateUrl: './company-view.page.html',
   styleUrls: ['./company-view.page.scss'],
 })
-export class CompanyViewPage implements OnInit {
+export class CompanyViewPage implements OnInit, OnDestroy {
 
   public company_id;
 
@@ -50,6 +51,8 @@ export class CompanyViewPage implements OnInit {
   public company: Company;
   public licenceStatus = '';
   public licencePreviewUrl = '';
+  private licenceRequest = 0;
+  private licenceSub: Subscription | null = null;
   public subCompanies: Company[] = [];
   public stores: Store[] = [];
 
@@ -1148,21 +1151,50 @@ export class CompanyViewPage implements OnInit {
   }
 
   loadLicence() {
-    if (this.licencePreviewUrl) {
-      URL.revokeObjectURL(this.licencePreviewUrl);
-      this.licencePreviewUrl = '';
+    const request = ++this.licenceRequest;
+    if (this.licenceSub) {
+      this.licenceSub.unsubscribe();
+      this.licenceSub = null;
     }
     if (!this.company || !this.company.commercial_licence) {
+      this.releaseLicencePreview();
       this.licenceStatus = 'none';
       return;
     }
     this.licenceStatus = 'loading';
-    this.companyService.openLicence(this.company.company_id).subscribe((blob) => {
+    this.licenceSub = this.companyService.openLicence(this.company.company_id).subscribe((blob) => {
+      if (request !== this.licenceRequest) {
+        return;
+      }
+      this.releaseLicencePreview();
       this.licencePreviewUrl = URL.createObjectURL(blob);
       this.licenceStatus = 'ready';
     }, (error) => {
-      this.licenceStatus = error && error.status === 401 ? 'auth' : 'unavailable';
+      if (request !== this.licenceRequest) {
+        return;
+      }
+      if (error && error.status === 401) {
+        this.licenceStatus = 'auth';
+        return;
+      }
+      this.licenceStatus = this.licencePreviewUrl ? 'ready' : 'unavailable';
     });
+  }
+
+  ngOnDestroy() {
+    this.licenceRequest++;
+    if (this.licenceSub) {
+      this.licenceSub.unsubscribe();
+      this.licenceSub = null;
+    }
+    this.releaseLicencePreview();
+  }
+
+  private releaseLicencePreview() {
+    if (this.licencePreviewUrl) {
+      URL.revokeObjectURL(this.licencePreviewUrl);
+      this.licencePreviewUrl = '';
+    }
   }
 
   openLicence(event: Event) {
