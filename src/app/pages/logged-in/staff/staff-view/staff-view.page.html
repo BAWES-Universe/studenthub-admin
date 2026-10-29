@@ -481,7 +481,7 @@
           </ion-badge>
         </ion-label>
         <ion-avatar slot="start">
-          <img *ngIf="company.company_logo" [src]="company.company_logo_url || (aws.cloudinaryUrl + company.company_logo)" (error)="loadLogo($event,company)">
+          <img *ngIf="company.company_logo" [src]="company.company_logo_url !== undefined ? company.company_logo_url : (aws.cloudinaryUrl + company.company_logo)" (error)="loadLogo($event,company)">
           <img *ngIf="!company.company_logo" src="/assets/icon.png">
         </ion-avatar>
 
