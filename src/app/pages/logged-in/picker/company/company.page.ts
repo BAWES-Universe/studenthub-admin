@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController, Platform } from '@ionic/angular';
 import { CompanyService } from '../../../../providers/logged-in/company.service';
 import { AwsService } from '../../../../providers/aws.service';
+import { resolvedStoredImageUrl } from '../../../../providers/stored-image-url';
 import { AuthService } from '../../../../providers/auth.service';
 import {Company} from '../../../../models/company';
 
@@ -109,8 +110,17 @@ export class CompanyPage implements OnInit {
     });
   }
 
-  loadLogo($event, company) {
-    company.company_logo = null;
+  logoSrc(company: Company): string | null {
+    return resolvedStoredImageUrl(company?.company_logo_url, company?.company_logo, this.awsService.cloudinaryUrl);
+  }
+
+  showLogo(company: Company): boolean {
+    const src = this.logoSrc(company);
+    return !!src && company?.logo_failed_src !== src;
+  }
+
+  markLogoUnavailable(company: Company) {
+    company.logo_failed_src = this.logoSrc(company);
   }
 
   resetStatus() {

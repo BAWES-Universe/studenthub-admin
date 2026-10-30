@@ -3,6 +3,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {ActionSheetController, AlertController, Platform} from '@ionic/angular';
 
 import {AwsService} from '../../providers/aws.service';
+import { resolvedStoredImageUrl } from '../../providers/stored-image-url';
 import {CameraService} from '../../providers/camera.service';
 import { BACKEND_IMAGE_EXTENSIONS, acceptAttribute, uploadAlertMessage } from '../../providers/upload-formats';
 
@@ -62,8 +63,14 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
     this.bucketUrl = this.bucketUrlPermanent + 'photos/';
   }
 
+  /** Resolved URL for a company logo already stored by the API. Null or empty means unavailable. */
+  @Input() previewUrl?: string | null;
+  /** Filename uploaded in this control session. Existing saved values do not match it. */
+  private uploadedTempName: string | null = null;
+  private previewFailedSrc = '';
+
   ngOnInit() {
-    if (this.prefix == 'photo' || this.prefix == 'logo') {
+    if (this.prefix == 'photo') {
       this.bucketUrl = this.awsService.cloudinaryUrl;
     } else if(this.prefix == "discount-category") {
       this.bucketUrlPermanent = this.awsService.permanentBucketUrl + 'discount-category/';
@@ -72,6 +79,25 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
       this.bucketUrlPermanent = this.awsService.permanentBucketUrl + 'discount/';
       this.bucketUrl = this.bucketUrlPermanent;
     }
+  }
+
+  displaySrc(): string {
+    if (this.uploadedTempName && this.value === this.uploadedTempName) {
+      return this.bucketUrlTemporary + this.value;
+    }
+    if (this.prefix === 'logo') {
+      return resolvedStoredImageUrl(this.previewUrl, this.value, this.awsService.cloudinaryUrl) || '';
+    }
+    return this.value ? this.bucketUrl + this.value : '';
+  }
+
+  previewBroken(): boolean {
+    const src = this.displaySrc();
+    return !!src && this.previewFailedSrc === src;
+  }
+
+  onPreviewError() {
+    this.previewFailedSrc = this.displaySrc();
   }
 
   /**
@@ -212,6 +238,8 @@ export class ImageUploadComponent implements ControlValueAccessor, OnInit {
       this.isUploading = false;
       // Switch to temporary bucket url
       this.bucketUrl = this.bucketUrlTemporary;
+      this.uploadedTempName = newUpload.name;
+      this.previewFailedSrc = '';
       // Set the new value of this file upload
       this.value = newUpload.name;
     });

@@ -21,11 +21,6 @@
   <form [formGroup]="form" *ngIf="form">
     <ion-list>
 
-        <app-image-upload
-                label="Company Logo" icon="person-outline" prefix="logo"
-                formControlName="logo"
-        ></app-image-upload>
-
         <ion-item>
           <ion-label position="floating">Name</ion-label>
           <ion-input type="text" formControlName="name"></ion-input>
